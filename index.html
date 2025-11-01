@@ -2,9 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="asset/img/favicon.png"  >
+    <link rel="icon" href="https://cloud.familyyee.com/asset/img/Samll-Icon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>short</title>
+    <title>Short URL | Cloud FAMILY YEE</title>
     <style>
       :root {
         --color-primary: #5c7cfa;
@@ -23,8 +23,8 @@
         margin-right: auto;
         padding-left: 2rem;
         padding-right: 2rem;
-        color: var(--body-color);
-        background: var(--body-bg);
+        color: white;
+        background: black;
         font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         line-height: 1.5;
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -47,7 +47,8 @@
         font-size: 5rem;
         font-weight: 300;
         text-align: center;
-        opacity: .2;
+        /* opacity: .2; */
+        margin-bottom: 0px;
       }
 
       main[x-cloak] {
@@ -66,7 +67,7 @@
         width: 100%;
         padding: .5rem 1rem;
         border: 1px solid var(--border-color);
-        border-radius: .25rem;
+        border-radius: 10px;
         box-sizing: border-box;
         color: #33404d;
         line-height: inherit;
@@ -83,12 +84,12 @@
       details {
         margin: 1rem 0 2rem;
         border: 1px solid var(--border-color);
-        border-radius: .25rem;
+        border-radius: 10px;
         transition: background .3s;
       }
 
       details[open] {
-        background: #fff;
+        background: black;
       }
 
       details summary {
@@ -120,7 +121,7 @@
         margin-bottom: 5rem;
         padding: .5rem .75rem;
         border: 1px solid var(--color-primary);
-        border-radius: .25rem;
+        border-radius: 10px;
         background: var(--color-primary);
         color: #fff;
         font-size: 1rem;
@@ -143,9 +144,9 @@
       }
 
       button:disabled {
-        background: var(--color-primary);
+        background: blue;
         border-color: var(--color-primary);
-        opacity: .6;
+        /* opacity: .6; */
         cursor: not-allowed;
       }
 
@@ -200,26 +201,60 @@
           transform: rotate(360deg);
         }
       }
+
+      /* --- 颗粒联动效果的 CSS --- */
+      #tsparticles {
+        position: fixed; /* 使用 fixed 让它铺满整个视窗 */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1; /* 关键: 把它放在所有内容的后面 */
+      }
+
+      /* 可选: 确保你原有的 .container 不会遮挡它 
+        (如果你上次没有修改背景，可能需要这个) 
+      */
+      .container[data-v-5e6831cc] {
+        background: transparent; /* 设置为透明 */
+      }
+
+      /* 可选: 确保你的新背景(上次加的)在颗粒后面 
+        (如果你上次添加了 #f8f9fa 背景)
+      */
+      body {
+        z-index: -2;
+      }
+
     </style>
   </head>
   <body>
-    <header><h1>short</h1></header>
+    <div id="tsparticles"></div>
+    <header>
+      <h1 style="margin-bottom: 0px;"><a href="https://cloud.familyyee.com"> <img src="https://cloud.familyyee.com/asset/img/Cloud FAMILY YEE LOGO [White].png" alt="Cloud FAMILY YEE Logo" style="width: 300px;"></a></h1><br>
+      <h2 style="margin-top: 0px; text-align: center;">Short URL Creation | Cloud FAMILY YEE</h1>
+    </header>
     <main x-data="app" x-cloak>
       <p x-show.transition.opacity="alert" :class="alert?.type" x-text="alert?.message"></p>
-      <input placeholder="输入要缩短的网址..." x-model="url" x-ref="url" />
+      <input placeholder="输入您要缩短的网址..." x-model="url" x-ref="url" />
       <details>
         <summary>自定义设置</summary>
         <div>
-          <input placeholder="slug" x-model="slug" />
-          <small>Slug 默认是随机生成的短 id。</small>
+          <input placeholder="Node" x-model="slug" />
+          <small>Node 默认是随机生成的短 id。</small>
         </div>
       </details>
       <button :class="{ loading }" :disabled="loading || isValidated()" @click="submit($refs, $nextTick)">生成</button>
     </main>
     <footer>
-     service
+      <div style="text-decoration: none; color: #94A3B8; font-size: 13px;">
+                <p style="margin-bottom: 1px;">Copyright &copy; 2020-2025 <a href="https://cloud.familyyee.com" style="text-decoration: none; color: #94A3B8;">Cloud Network FAMILY YEE</a>. All Right Reserved.</p>
+                <p style="margin-top: 1px;"><a href="https://www.familyyee.com/term-of-service" style="text-decoration: none; color: #94A3B8;">服务条款</a> · <a href="https://www.familyyee.com/privacy-policy" style="text-decoration: none; color: #94A3B8;">隐私条款</a> · <a href="https://docs.google.com/forms/d/e/1FAIpQLSfENQtufdDZ0IhUolxybopxPhPEGqtpLV23VEL-m702gy7h-A/viewform?embedded=true" style="text-decoration: none; color: #94A3B8;">反馈表格</a> · 
+                    <a href="https://www.familyyee.com" style="text-decoration: none; color: #94A3B8;">总公司</a></p>
+      </div>
     </footer>
     <script src="asset/js/alpine.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
     <script>
       const app = {
         url: '',
@@ -272,6 +307,94 @@
             })
         }
       }
+
+
+      document.addEventListener('DOMContentLoaded', (event) => {
+    tsParticles.load("tsparticles", {
+      /* 这里就是 "颗粒联动" 的核心配置
+        你可以修改这些值
+      */
+      
+      // 背景 (设为透明, 因为你已经在 CSS 里设置了)
+      background: {
+        color: {
+          value: "transparent"
+        }
+      },
+      
+      // 颗粒 (点)
+      particles: {
+        number: {
+          value: 80, // 颗粒数量
+          density: {
+            enable: true,
+            value_area: 800
+          }
+        },
+        color: {
+          value: "#666666" // 颗粒颜色
+        },
+        shape: {
+          type: "circle"
+        },
+        opacity: {
+          value: 0.5,
+          random: false
+        },
+        size: {
+          value: 3, // 颗粒大小
+          random: true
+        },
+
+        // --- 核心: 联动 (Links) ---
+        links: {
+          color: "#999999", // 连线颜色
+          distance: 150, // 连线距离
+          enable: true, // 开启联动
+          opacity: 0.4,
+          width: 1
+        },
+
+        // 移动
+        move: {
+          enable: true,
+          speed: 2, // 移动速度
+          direction: "none",
+          random: false,
+          straight: false,
+          out_mode: "out",
+          bounce: false
+        }
+      },
+
+      // --- 核心: 互动 (Interactivity) ---
+      interactivity: {
+        detect_on: "canvas",
+        events: {
+          // 鼠标悬停
+          onhover: {
+            enable: true,
+            mode: "repulse" // "repulse" (排斥) 或 "bubble" (放大)
+          },
+          // 鼠标点击
+          onclick: {
+            enable: true,
+            mode: "push" // "push" (添加颗粒)
+          },
+          resize: true
+        },
+        modes: {
+          repulse: {
+            distance: 100 // 排斥距离
+          },
+          push: {
+            particles_nb: 4 // 每次点击添加4个
+          }
+        }
+      },
+      detectRetina: true
+    });
+  });
     </script>
   </body>
 </html>
