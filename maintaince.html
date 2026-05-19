@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统维护中 | Cloud FAMILY YEE OS</title>
+    <link rel="icon" href="https://cloud.familyyee.com/asset/img/Samll-Icon.png">
+    
+    <link rel="stylesheet" href="https://cloud.familyyee.com/asset/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <canvas id="matrix-canvas"></canvas>
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+    <div class="vertical-brand" style="color: #ff9900;">SYS_UPGRADE_IN_PROGRESS</div>
+
+    <nav style="justify-content: center;">
+        <div class="nav-logo">
+            <img src="https://cloud.familyyee.com/asset/img/Cloud FAMILY YEE LOGO [White].png" style="width: 130px; opacity: 0.5;" alt="Logo">
+        </div>
+    </nav>
+
+    <div class="sys-ticker" style="background: rgba(255, 153, 0, 0.1); border-color: rgba(255, 153, 0, 0.3); color: #ff9900;">
+        <div class="ticker-wrapper">
+            <span class="ticker-item" style="color: #ff9900;">[MAINTENANCE] 核心硬件架构升级与 EDMS 防御系统重载中，当前处于全网静默状态。</span>
+        </div>
+        <div class="ticker-wrapper">
+            <span class="ticker-item" style="color: #ff9900;">[MAINTENANCE] 核心硬件架构升级与 EDMS 防御系统重载中，当前处于全网静默状态。</span>
+        </div>
+    </div>
+
+    <section id="maintenance-mode" style="min-height: 80vh; display: flex; align-items: center; justify-content: center; text-align: center; padding-top: 0;">
+        <div class="reveal">
+            
+            <div style="font-size: 4rem; color: #ff9900; margin-bottom: 20px;">
+                <i class="fas fa-tools fa-bounce" style="--fa-animation-duration: 3s;"></i>
+            </div>
+
+            <h1 class="glitch-title" style="font-size: clamp(3rem, 6vw, 5rem); margin-bottom: 10px;">SYSTEM_OFFLINE</h1>
+            <h2 style="color: #ff9900; font-family: 'Fira Code', monospace; font-size: 1.2rem; margin-bottom: 20px;">>> MAINTENANCE_PROTOCOL_ACTIVE</h2>
+            
+            <p style="color: var(--text-muted); max-width: 550px; margin: 0 auto 30px; line-height: 1.8;">
+                Cloud FAMILY YEE 主干网络正在进行深度的底层架构升级，以支持更庞大的并发吞吐量与最新的安全补丁。在此期间，外部访问节点已被临时隔离。
+            </p>
+
+            <div class="code-block" style="text-align: left; max-width: 600px; margin: 0 auto 40px; border-color: #ff9900;">
+                > Initiating core system upgrade...<br>
+                > Patching security vulnerabilities (EDMS v1.1)... <span style="color: #0f0;">[OK]</span><br>
+                > Upgrading node capacity to 1500+ ... <span style="color: #ff9900;">[IN_PROGRESS]</span><br>
+                > Re-compiling Astro framework assets...<br><br>
+                <span style="color: var(--primary);">[████████████░░░░░░] 68%</span><br>
+                > Estimated Time to Online (ETA): <span id="countdown" style="color: #fff; font-weight: bold;">02:45:10</span>
+            </div>
+
+            <a href="mailto:cloudnetwork@cloud.familyyee.com" class="btn-cyber" style="border-color: #ff9900; color: #ff9900;">
+                <i class="fas fa-terminal" style="margin-right: 10px;"></i> PING_SYS_ADMIN (联系管理员)
+            </a>
+        </div>
+    </section>
+
+    <script>
+        // 模拟一个随机倒计时器 (格式 HH:MM:SS)
+        let totalSeconds = 2 * 3600 + 45 * 60 + 10; // 初始时间：2小时45分10秒
+        
+        setInterval(() => {
+            if(totalSeconds > 0) totalSeconds--;
+            
+            let h = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+            let m = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+            let s = (totalSeconds % 60).toString().padStart(2, '0');
+            
+            document.getElementById('countdown').innerText = `${h}:${m}:${s}`;
+        }, 1000);
+    </script>
+
+    <script src="asset/javascript/main.js"></script>
+</body>
+</html>
