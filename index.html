@@ -16,8 +16,10 @@
         --color-primary: #5c7cfa;
         --color-primary-dark: #4263eb;
         --color-primary-alpha: #5c7cfa50;
+
         --body-color: #495057;
         --body-bg: #f8f9fa;
+
         --border-color: #dee2e6;
       }
 
@@ -54,10 +56,13 @@
         margin-bottom: 0px;
       }
 
-      /* 💡 核心修正：强制让 main 区域显示，无论 Alpine 是否崩溃 */
-      main {
-        opacity: 1 !important;
-        display: block !important;
+      main[x-cloak] {
+        opacity: 0;
+      }
+
+      main:not([x-cloak]) {
+        opacity: 1;
+        transition: opacity .3s;
       }
 
       input {
@@ -73,7 +78,6 @@
         line-height: inherit;
         font-size: 1rem;
         transition: border .3s, box-shadow .3s;
-        margin-bottom: 1rem;
       }
 
       input:focus {
@@ -140,4 +144,267 @@
 
       button:focus {
         box-shadow: 0 0 0 .25rem var(--color-primary-alpha);
-        border-color: var(--color-
+        border-color: var(--color-primary);
+        outline: 0;
+      }
+
+      /* 💡 优化未验证时的灰色按钮样式 */
+      button:disabled {
+        background: #495057 !important;
+        border-color: #495057 !important;
+        color: #adb5bd !important;
+        cursor: not-allowed;
+        opacity: 0.6; 
+      }
+
+      button.loading::before {
+        content: '';
+        display: inline-block;
+        margin-right: .5rem;
+        border: 2px solid #fff;
+        border-top-color: transparent;
+        border-bottom-color: transparent;
+        border-radius: 50%;
+        width: .75rem;
+        height: .75rem;
+        animation: rotate .5s linear infinite;
+      }
+
+      footer {
+        padding: 1rem;
+        border-top: 1px solid var(--border-color);
+        text-align: center;
+        opacity: .5;
+      }
+
+      footer i {
+        font-style: normal;
+        color: #ff8787;
+      }
+
+      .success,
+      .error {
+        margin-bottom: 1rem;
+        padding: .5rem 1rem;
+        border-radius: .25rem;
+        color: #fff;
+        text-align: center;
+        opacity: 1;
+        transition: opacity .3s;
+      }
+
+      .success {
+        border: 1px solid #12b886;
+        background: #38d9a9;
+      }
+
+      .error {
+        border: 1px solid #fa5252;
+        background: #ff8787;
+      }
+
+      @keyframes rotate {
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      #tsparticles {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+      }
+
+      body {
+        z-index: -2;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="tsparticles"></div>
+    <header>
+      <h1 style="margin-bottom: 0px;">
+        <a href="https://cloud.familyyee.com"> 
+          <img src="https://cloud.familyyee.com/asset/img/Cloud FAMILY YEE LOGO [White].png" alt="Cloud FAMILY YEE Logo" style="width: 300px;">
+        </a>
+      </h1>
+      <br>
+      <h2 style="margin-top: 0px; text-align: center;">Short URL Creation | Cloud FAMILY YEE</h2>
+    </header>
+    
+    <main x-data="app" x-cloak>
+      <p x-show.transition.opacity="alert" :class="alert?.type" x-text="alert?.message"></p>
+      <input placeholder="输入您要缩短的网址..." x-model="url" x-ref="url" />
+      <details>
+        <summary>自定义设置</summary>
+        <div>
+          <input placeholder="Node" x-model="slug" />
+          <small>Node 默认是随机生成的短 id。</small>
+        </div>
+      </details>
+      
+      <div class="cf-turnstile" 
+           data-sitekey="0x4AAAAAACJfF5lEguDWDXk4" 
+           data-callback="onTurnstileSuccess" 
+           data-size="flexible" 
+           data-theme="dark">
+      </div>
+    
+      <button :class="{ loading }" @click="submit($refs, $nextTick)" id="submitBtn" disabled>生成</button>
+    </main>
+
+    <footer>
+      <div style="text-decoration: none; color: #94A3B8; font-size: 13px;">
+        <p style="margin-bottom: 1px;">Copyright &copy; 2020-<span id="year"></span> <a href="https://cloud.familyyee.com" style="text-decoration: none; color: #94A3B8;">Cloud Network FAMILY YEE</a>. All Right Reserved.</p>
+        <p style="margin-top: 1px;">
+          <a href="https://www.familyyee.com/term-of-service" style="text-decoration: none; color: #94A3B8;">服务条款</a> · 
+          <a href="https://www.familyyee.com/privacy-policy" style="text-decoration: none; color: #94A3B8;">隐私条款</a> · 
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSfENQtufdDZ0IhUolxybopxPhPEGqtpLV23VEL-m702gy7h-A/viewform?embedded=true" style="text-decoration: none; color: #94A3B8;">反馈表格</a> · 
+          <a href="https://www.familyyee.com" style="text-decoration: none; color: #94A3B8;">总公司</a>
+        </p>
+      </div>
+    </footer>
+
+    <script src="asset/js/alpine.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+    <script src="https://www.familyyee.com/assets/javascript/main.js"></script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+    <script>
+      // 💡 1. 独立的全局回调函数：当人机验证成功时执行
+      function onTurnstileSuccess(token) {
+        // 将获取到的凭证安全地注入到下方的核心功能对象中
+        app.turnstileToken = token;
+        // 瞬间移除按钮的禁用状态，使其变回高亮的蓝色、允许点击
+        var btn = document.getElementById('submitBtn');
+        if (btn) {
+          btn.removeAttribute('disabled');
+        }
+      }
+
+      // 💡 2. 原封不动退回到你最初 100% 能够运行的传统纯对象结构，确保老版本 Alpine.js 不崩溃
+      const app = {
+        url: '',
+        slug: '',
+        alert: null,
+        loading: false,
+        turnstileToken: '', // 新增：安全凭证接收变量
+
+        isValidated () {
+          return !/^https?:\/\/.{3,}/.test(this.url)
+        },
+
+        submit ($refs, $nextTick) {
+          if (!this.url) {
+            this.alert = { type: 'error', message: '缺少必需的参数：url。' }
+            return
+          }
+
+          if (this.isValidated()) {
+            this.alert = { type: 'error', message: '非法格式：url。' }
+            return
+          }
+
+          // 如果用户绕过了前端防御，拦截提交动作
+          if (!this.turnstileToken) {
+            this.alert = { type: 'error', message: '请先完成人机验证。' }
+            return
+          }
+
+          this.alert = null
+          this.loading = true
+
+          // 💡 原有短网址生成业务：完美融入验证码字段传递给后端接口
+          const body = { 
+            url: this.url,
+            'cf-turnstile-response': this.turnstileToken
+          }
+          if (this.slug) body.slug = this.slug
+
+          fetch('/create', {
+            method: 'post',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify(body)
+          })
+            .then(res => res.json())
+            .then(res => {
+              this.loading = false
+              if (res.message) {
+                this.alert = { type: 'error', message: res.message }
+                return
+              }
+
+              this.url = res.link
+
+              $nextTick(() => {
+                $refs.url.select()
+                this.alert = { type: 'success', message: `链接 ${document.execCommand('Copy') ? '复制' : '生成'} ` }
+              })
+            })
+            .catch(e => {
+              this.alert = { type: 'error', message: e.message }
+              this.loading = false
+            })
+        }
+      }
+
+      // 💡 3. 初始化背景动画与基础界面配置
+      document.addEventListener('DOMContentLoaded', function() {
+        // 安全修补页脚年份
+        var yearEl = document.getElementById('year');
+        if (yearEl) {
+          yearEl.innerText = new Date().getFullYear();
+        }
+
+        // 维持你原有的背景颗粒效果
+        tsParticles.load("tsparticles", {
+          background: {
+            color: { value: "transparent" }
+          },
+          particles: {
+            number: {
+              value: 80,
+              density: { enable: true, value_area: 800 }
+            },
+            color: { value: "#666666" },
+            shape: { type: "circle" },
+            opacity: { value: 0.5, random: false },
+            size: { value: 3, random: true },
+            links: {
+              color: "#999999",
+              distance: 150,
+              enable: true,
+              opacity: 0.4,
+              width: 1
+            },
+            move: {
+              enable: true,
+              speed: 2,
+              direction: "none",
+              random: false,
+              straight: false,
+              out_mode: "out",
+              bounce: false
+            }
+          },
+          interactivity: {
+            detect_on: "canvas",
+            events: {
+              onhover: { enable: true, mode: "repulse" },
+              onclick: { enable: true, mode: "push" },
+              resize: true
+            },
+            modes: {
+              repulse: { distance: 100 },
+              push: { particles_nb: 4 }
+            }
+          },
+          detectRetina: true
+        });
+      });
+    </script>
+  </body>
+</html>
