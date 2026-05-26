@@ -267,45 +267,90 @@
     <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
     <script src="https://www.familyyee.com/assets/javascript/main.js"></script>
     <!-- 💡 必须引入这个脚本，否则 Turnstile 根本不会加载 -->
-    <script src="https://cloudflare.com" async defer></script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <!-- 确保你也引入了 Alpine.js -->
-    <script defer src="https://unpkg.com"></script>
+    <!-- <script defer src="https://unpkg.com"></script> -->
     <script>
-      // 💡 定义一个全局变量，方便 Alpine.js 实例初始化时引用
+      // 💡 定义全局变量，方便接收 Turnstile 回调
       let appInstance;
-    
-      // 💡 Turnstile 成功验证后的全局回调函数
+      
       function onTurnstileSuccess(token) {
         if (appInstance) {
-          appInstance.turnstileToken = token; // 将 token 传给 Alpine.js
+          appInstance.turnstileToken = token;
         }
       }
-    
+      
       document.addEventListener('alpine:init', () => {
         Alpine.data('app', () => {
           const instance = {
             url: '',
             slug: '',
-            loading: false,
             alert: null,
-            turnstileToken: '', // 💡 新增：用于存储验证码成功的 Token，默认空（按钮禁用）
-    
+            loading: false,
+            turnstileToken: '', // 用于存储验证码成功的 Token
+      
+            isValidated() {
+              return !/^https?:\/\/.{3,}/.test(this.url);
+            },
+      
             submit($refs, $nextTick) {
+              if (!this.url) {
+                this.alert = { type: 'error', message: '缺少必需的参数：url。' };
+                return;
+              }
+      
+              if (this.isValidated()) {
+                this.alert = { type: 'error', message: '非法格式：url。' };
+                return;
+              }
+      
+              if (!this.turnstileToken) {
+                this.alert = { type: 'error', message: '请先完成人机验证。' };
+                return;
+              }
+      
+              this.alert = null;
               this.loading = true;
+      
+              const body = { 
+                url: this.url,
+                // 💡 将 turnstile 的 token 发送给后端验证 (参数名取决于你后端的设置)
+                'cf-turnstile-response': this.turnstileToken 
+              };
               
-              // 这里是你的提交逻辑，别忘了在请求体里带上 this.turnstileToken 传给后端
-              console.log('提交的 Token:', this.turnstileToken);
-              
-              // 模拟请求结束
-              setTimeout(() => { this.loading = false; }, 2000);
+              if (this.slug) body.slug = this.slug;
+      
+              fetch('/create', {
+                method: 'post',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify(body)
+              })
+                .then(res => res.json())
+                .then(res => {
+                  this.loading = false;
+                  if (res.message) {
+                    this.alert = { type: 'error', message: res.message };
+                    return;
+                  }
+      
+                  this.url = res.link;
+      
+                  $nextTick(() => {
+                    $refs.url.select();
+                    this.alert = { type: 'success', message: `链接 ${document.execCommand('Copy') ? '复制' : '生成'} ` };
+                  });
+                })
+                .catch(e => {
+                  this.alert = { type: 'error', message: e.message };
+                  this.loading = false;
+                });
             }
           };
-          
-          appInstance = instance; // 将实例挂载到全局变量上
+      
+          appInstance = instance;
           return instance;
         });
       });
-
 
       
       const app = {
