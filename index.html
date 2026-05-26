@@ -250,9 +250,12 @@
           <small>Node 默认是随机生成的短 id。</small>
         </div>
       </details>
+      <!-- 💡 保持你的站点密钥，回调函数会自动寻找全局的 onTurnstileSuccess -->
       <div class="cf-turnstile" data-sitekey="0x4AAAAAACJfF5lEguDWDXk4" data-callback="onTurnstileSuccess"></div>
-      <button :class="{ loading }" :disabled="loading || isValidated()" @click="submit($refs, $nextTick)" id="submitBtn" disabled>生成</button>
-    </main>
+    
+      <!-- 💡 按钮状态由 Alpine.js 的 loading 和 turnstileToken 统一控制 -->
+      <button :class="{ loading }" :disabled="loading || !turnstileToken" @click="submit($refs, $nextTick)" id="submitBtn">生成</button>
+      </main>
     <footer>
       <div style="text-decoration: none; color: #94A3B8; font-size: 13px;">
                 <p style="margin-bottom: 1px;">Copyright &copy; 2020-<spam id="year"></spam> <a href="https://cloud.familyyee.com" style="text-decoration: none; color: #94A3B8;">Cloud Network FAMILY YEE</a>. All Right Reserved.</p>
@@ -263,11 +266,45 @@
     <script src="asset/js/alpine.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
     <script src="https://www.familyyee.com/assets/javascript/main.js"></script>
+    <!-- 💡 必须引入这个脚本，否则 Turnstile 根本不会加载 -->
+    <script src="https://cloudflare.com" async defer></script>
+    <!-- 确保你也引入了 Alpine.js -->
+    <script defer src="https://unpkg.com"></script>
     <script>
+      // 💡 定义一个全局变量，方便 Alpine.js 实例初始化时引用
+      let appInstance;
+    
+      // 💡 Turnstile 成功验证后的全局回调函数
       function onTurnstileSuccess(token) {
-          // 当 Turnstile 成功验证时，此函数会被调用，并传入一个 token
-          document.getElementById("submitBtn").disabled = false;
+        if (appInstance) {
+          appInstance.turnstileToken = token; // 将 token 传给 Alpine.js
+        }
       }
+    
+      document.addEventListener('alpine:init', () => {
+        Alpine.data('app', () => {
+          const instance = {
+            url: '',
+            slug: '',
+            loading: false,
+            alert: null,
+            turnstileToken: '', // 💡 新增：用于存储验证码成功的 Token，默认空（按钮禁用）
+    
+            submit($refs, $nextTick) {
+              this.loading = true;
+              
+              // 这里是你的提交逻辑，别忘了在请求体里带上 this.turnstileToken 传给后端
+              console.log('提交的 Token:', this.turnstileToken);
+              
+              // 模拟请求结束
+              setTimeout(() => { this.loading = false; }, 2000);
+            }
+          };
+          
+          appInstance = instance; // 将实例挂载到全局变量上
+          return instance;
+        });
+      });
 
 
       
