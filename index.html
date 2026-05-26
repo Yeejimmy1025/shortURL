@@ -255,7 +255,7 @@
       <div class="cf-turnstile" data-sitekey="0x4AAAAAACJfF5lEguDWDXk4" data-callback="onTurnstileSuccess"></div>
     
       <!-- 💡 按钮状态由 Alpine.js 的 loading 和 turnstileToken 统一控制 -->
-      <button :class="{ loading }" :disabled="loading || !turnstileToken" @click="submit($refs, $nextTick)" id="submitBtn">生成</button>
+      <button :class="{ loading }" :disabled="loading || !turnstileToken" @click="submit($refs, $nextTick)" id="submitBtn" disabled>生成</button>
       </main>
     <footer>
       <div style="text-decoration: none; color: #94A3B8; font-size: 13px;">
