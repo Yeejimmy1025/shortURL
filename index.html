@@ -16,10 +16,8 @@
         --color-primary: #5c7cfa;
         --color-primary-dark: #4263eb;
         --color-primary-alpha: #5c7cfa50;
-
         --body-color: #495057;
         --body-bg: #f8f9fa;
-
         --border-color: #dee2e6;
       }
 
@@ -53,17 +51,13 @@
         font-size: 5rem;
         font-weight: 300;
         text-align: center;
-        /* opacity: .2; */
         margin-bottom: 0px;
       }
 
-      main[x-cloak] {
-        opacity: 0;
-      }
-
-      main:not([x-cloak]) {
-        opacity: 1;
-        transition: opacity .3s;
+      /* 💡 核心修正：强制让 main 区域显示，无论 Alpine 是否崩溃 */
+      main {
+        opacity: 1 !important;
+        display: block !important;
       }
 
       input {
@@ -79,6 +73,7 @@
         line-height: inherit;
         font-size: 1rem;
         transition: border .3s, box-shadow .3s;
+        margin-bottom: 1rem;
       }
 
       input:focus {
@@ -135,7 +130,7 @@
         line-height: inherit;
         cursor: pointer;
         user-select: none;
-        transition: border .3s, background .3s,;
+        transition: border .3s, background .3s;
       }
 
       button:hover {
@@ -145,260 +140,4 @@
 
       button:focus {
         box-shadow: 0 0 0 .25rem var(--color-primary-alpha);
-        border-color: var(--color-primary);
-        outline: 0;
-      }
-
-      button:disabled {
-        background: #6c757d; /* 灰色背景 */
-        border-color: #6c757d; /* 灰色边框 */
-        color: #e9ecef; /* 文字稍微变暗 */
-        cursor: not-allowed;
-        opacity: 0.8; 
-      }
-
-      button.loading::before {
-        content: '';
-        display: inline-block;
-        margin-right: .5rem;
-        border: 2px solid #fff;
-        border-top-color: transparent;
-        border-bottom-color: transparent;
-        border-radius: 50%;
-        width: .75rem;
-        height: .75rem;
-        animation: rotate .5s linear infinite;
-      }
-
-      footer {
-        padding: 1rem;
-        border-top: 1px solid var(--border-color);
-        text-align: center;
-        opacity: .5;
-      }
-
-      footer i {
-        font-style: normal;
-        color: #ff8787;
-      }
-
-      .success,
-      .error {
-        margin-bottom: 1rem;
-        padding: .5rem 1rem;
-        border-radius: .25rem;
-        color: #fff;
-        text-align: center;
-        opacity: 1;
-        transition: opacity .3s;
-      }
-
-      .success {
-        border: 1px solid #12b886;
-        background: #38d9a9;
-      }
-
-      .error {
-        border: 1px solid #fa5252;
-        background: #ff8787;
-      }
-
-      @keyframes rotate {
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-
-      /* --- 颗粒联动效果的 CSS --- */
-      #tsparticles {
-        position: fixed; /* 使用 fixed 让它铺满整个视窗 */
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: -1; /* 关键: 把它放在所有内容的后面 */
-      }
-
-      /* 可选: 确保你原有的 .container 不会遮挡它 
-        (如果你上次没有修改背景，可能需要这个) 
-      */
-      .container[data-v-5e6831cc] {
-        background: transparent; /* 设置为透明 */
-      }
-
-      /* 可选: 确保你的新背景(上次加的)在颗粒后面 
-        (如果你上次添加了 #f8f9fa 背景)
-      */
-      body {
-        z-index: -2;
-      }
-
-    </style>
-  </head>
-  <body>
-    <div id="tsparticles"></div>
-    <header>
-      <h1 style="margin-bottom: 0px;"><a href="https://cloud.familyyee.com"> <img src="https://cloud.familyyee.com/asset/img/Cloud FAMILY YEE LOGO [White].png" alt="Cloud FAMILY YEE Logo" style="width: 300px;"></a></h1><br>
-      <h2 style="margin-top: 0px; text-align: center;">Short URL Creation | Cloud FAMILY YEE</h1>
-    </header>
-    <main x-data="app" >
-      <p x-show.transition.opacity="alert" :class="alert?.type" x-text="alert?.message"></p>
-      <input placeholder="输入您要缩短的网址..." x-model="url" x-ref="url" />
-      <details>
-        <summary>自定义设置</summary>
-        <div>
-          <input placeholder="Node" x-model="slug" />
-          <small>Node 默认是随机生成的短 id。</small>
-        </div>
-      </details>
-      <!-- 💡 保持你的站点密钥，回调函数会自动寻找全局的 onTurnstileSuccess -->
-      <div class="cf-turnstile" data-sitekey="0x4AAAAAACJfF5lEguDWDXk4" data-callback="onTurnstileSuccess" data-size="flexible"></div>
-    
-      <!-- 💡 按钮状态由 Alpine.js 的 loading 和 turnstileToken 统一控制 -->
-      <button :class="{ loading }" :disabled="loading || !turnstileToken" @click="submit($refs, $nextTick)" id="submitBtn">生成</button>
-      </main>
-    <footer>
-      <div style="text-decoration: none; color: #94A3B8; font-size: 13px;">
-                <p style="margin-bottom: 1px;">Copyright &copy; 2020-<span id="year"></span> <a href="https://cloud.familyyee.com" style="text-decoration: none; color: #94A3B8;">Cloud Network FAMILY YEE</a>. All Right Reserved.</p>
-                <p style="margin-top: 1px;"><a href="https://www.familyyee.com/term-of-service" style="text-decoration: none; color: #94A3B8;">服务条款</a> · <a href="https://www.familyyee.com/privacy-policy" style="text-decoration: none; color: #94A3B8;">隐私条款</a> · <a href="https://docs.google.com/forms/d/e/1FAIpQLSfENQtufdDZ0IhUolxybopxPhPEGqtpLV23VEL-m702gy7h-A/viewform?embedded=true" style="text-decoration: none; color: #94A3B8;">反馈表格</a> · 
-                    <a href="https://www.familyyee.com" style="text-decoration: none; color: #94A3B8;">总公司</a></p>
-      </div>
-    </footer>
-    <script src="asset/js/alpine.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
-    <script src="https://www.familyyee.com/assets/javascript/main.js"></script>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-
-    <script>
-      // 1. Turnstile 验证通过的全局回调函数
-      function onTurnstileSuccess(token) {
-        // 向全局派发自定义事件，将 token 传递给 Alpine.js
-        document.dispatchEvent(new CustomEvent('turnstile-success', { detail: token }));
-      }
-      
-      // 2. 使用最稳妥的传统兼容语法初始化 Alpine.js
-      document.addEventListener('alpine:init', function() {
-        Alpine.data('app', function() {
-          return {
-            url: '',
-            slug: '',
-            alert: null,
-            loading: false,
-            turnstileToken: '', // 用于存储验证码 Token
-
-            isValidated: function() {
-              return !/^https?:\/\/.{3,}/.test(this.url);
-            },
-      
-            submit: function($refs, $nextTick) {
-              if (!this.url) {
-                this.alert = { type: 'error', message: '缺少必需的参数：url。' };
-                return;
-              }
-      
-              if (this.isValidated()) {
-                this.alert = { type: 'error', message: '非法格式：url。' };
-                return;
-              }
-      
-              if (!this.turnstileToken) {
-                this.alert = { type: 'error', message: '请先完成人机验证。' };
-                return;
-              }
-      
-              this.alert = null;
-              this.loading = true;
-      
-              var body = { 
-                url: this.url,
-                'cf-turnstile-response': this.turnstileToken 
-              };
-              
-              if (this.slug) body.slug = this.slug;
-      
-              var self = this;
-              fetch('/create', {
-                method: 'post',
-                headers: { 'content-type': 'application/json' },
-                body: JSON.stringify(body)
-              })
-                .then(function(res) { return res.json(); })
-                .then(function(res) {
-                  self.loading = false;
-                  if (res.message) {
-                    self.alert = { type: 'error', message: res.message };
-                    return;
-                  }
-      
-                  self.url = res.link;
-      
-                  $nextTick(function() {
-                    $refs.url.select();
-                    self.alert = { type: 'success', message: '链接 ' + (document.execCommand('Copy') ? '复制' : '生成') };
-                  });
-                })
-                .catch(function(e) {
-                  self.alert = { type: 'error', message: e.message };
-                  self.loading = false;
-                });
-            }
-          };
-        });
-      });
-
-      // 3. 初始化背景颗粒联动效果
-      document.addEventListener('DOMContentLoaded', function(event) {
-        // 自动修正年份标签
-        var yearEl = document.getElementById('year');
-        if (yearEl) {
-          yearEl.innerText = new Date().getFullYear();
-        }
-
-        tsParticles.load("tsparticles", {
-          background: {
-            color: { value: "transparent" }
-          },
-          particles: {
-            number: {
-              value: 80,
-              density: { enable: true, value_area: 800 }
-            },
-            color: { value: "#666666" },
-            shape: { type: "circle" },
-            opacity: { value: 0.5, random: false },
-            size: { value: 3, random: true },
-            links: {
-              color: "#999999",
-              distance: 150,
-              enable: true,
-              opacity: 0.4,
-              width: 1
-            },
-            move: {
-              enable: true,
-              speed: 2,
-              direction: "none",
-              random: false,
-              straight: false,
-              out_mode: "out",
-              bounce: false
-            }
-          },
-          interactivity: {
-            detect_on: "canvas",
-            events: {
-              onhover: { enable: true, mode: "repulse" },
-              onclick: { enable: true, mode: "push" },
-              resize: true
-            },
-            modes: {
-              repulse: { distance: 100 },
-              push: { particles_nb: 4 }
-            }
-          },
-          detectRetina: true
-        });
-      });
-    </script>
-  </body>
-</html>
+        border-color: var(--color-
