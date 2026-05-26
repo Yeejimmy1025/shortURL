@@ -4,12 +4,12 @@
     <meta charset="UTF-8" />
     <link rel="icon" href="https://cloud.familyyee.com/asset/img/Samll-Icon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Short URL | Cloud FAMILY YEE</title>
+    <title>Short URL - Cloud FAMILY YEE</title>
 
-    <meta property="og:title" content="Short URL | Cloud FAMILY YEE">
+    <meta property="og:title" content="Short URL - Cloud FAMILY YEE">
     <meta property="og:description" content="Short URL Creation | Cloud FAMILY YEE">
     <meta property="og:image" content="https://cloud.familyyee.com/asset/img/CloudFAMILYYEE-Background.png">
-    <meta property="og:url" content="https://familyyee.sylu.net/">
+    <meta property="og:url" content="https://f-y.de5.net/">
     <meta property="og:type" content="website">
     <style>
       :root {
@@ -250,7 +250,8 @@
           <small>Node 默认是随机生成的短 id。</small>
         </div>
       </details>
-      <button :class="{ loading }" :disabled="loading || isValidated()" @click="submit($refs, $nextTick)">生成</button>
+      <div class="cf-turnstile" data-sitekey="0x4AAAAAACJfF5lEguDWDXk4" data-callback="onTurnstileSuccess"></div>
+      <button :class="{ loading }" :disabled="loading || isValidated()" @click="submit($refs, $nextTick)" id="submitBtn" disabled>生成</button>
     </main>
     <footer>
       <div style="text-decoration: none; color: #94A3B8; font-size: 13px;">
@@ -263,6 +264,13 @@
     <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
     <script src="https://www.familyyee.com/assets/javascript/main.js"></script>
     <script>
+      function onTurnstileSuccess(token) {
+          // 当 Turnstile 成功验证时，此函数会被调用，并传入一个 token
+          document.getElementById("submitBtn").disabled = false;
+      }
+
+
+      
       const app = {
         url: '',
         slug: '',
