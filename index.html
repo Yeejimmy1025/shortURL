@@ -270,83 +270,86 @@
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
     <script>
-      // 💡 1. Turnstile 验证通过的全局回调函数
+      // 1. Turnstile 验证通过的全局回调函数
       function onTurnstileSuccess(token) {
         // 向全局派发自定义事件，将 token 传递给 Alpine.js
         document.dispatchEvent(new CustomEvent('turnstile-success', { detail: token }));
       }
       
-      // 💡 2. 初始化 Alpine.js 唯一的 'app' 数据模型
-      document.addEventListener('alpine:init', () => {
-        Alpine.data('app', () => ({
-          url: '',
-          slug: '',
-          alert: null,
-          loading: false,
-          turnstileToken: '', // 用于存储验证码 Token
+      // 2. 使用最稳妥的传统兼容语法初始化 Alpine.js
+      document.addEventListener('alpine:init', function() {
+        Alpine.data('app', function() {
+          return {
+            url: '',
+            slug: '',
+            alert: null,
+            loading: false,
+            turnstileToken: '', // 用于存储验证码 Token
 
-          isValidated() {
-            return !/^https?:\/\/.{3,}/.test(this.url);
-          },
-    
-          submit($refs, $nextTick) {
-            if (!this.url) {
-              this.alert = { type: 'error', message: '缺少必需的参数：url。' };
-              return;
-            }
-    
-            if (this.isValidated()) {
-              this.alert = { type: 'error', message: '非法格式：url。' };
-              return;
-            }
-    
-            if (!this.turnstileToken) {
-              this.alert = { type: 'error', message: '请先完成人机验证。' };
-              return;
-            }
-    
-            this.alert = null;
-            this.loading = true;
-    
-            const body = { 
-              url: this.url,
-              'cf-turnstile-response': this.turnstileToken 
-            };
-            
-            if (this.slug) body.slug = this.slug;
-    
-            fetch('/create', {
-              method: 'post',
-              headers: { 'content-type': 'application/json' },
-              body: JSON.stringify(body)
-            })
-              .then(res => res.json())
-              .then(res => {
-                this.loading = false;
-                if (res.message) {
-                  this.alert = { type: 'error', message: res.message };
-                  return;
-                }
-    
-                this.url = res.link;
-    
-                $nextTick(() => {
-                  $refs.url.select();
-                  this.alert = { type: 'success', message: `链接 ${document.execCommand('Copy') ? '复制' : '生成'} ` };
-                });
+            isValidated: function() {
+              return !/^https?:\/\/.{3,}/.test(this.url);
+            },
+      
+            submit: function($refs, $nextTick) {
+              if (!this.url) {
+                this.alert = { type: 'error', message: '缺少必需的参数：url。' };
+                return;
+              }
+      
+              if (this.isValidated()) {
+                this.alert = { type: 'error', message: '非法格式：url。' };
+                return;
+              }
+      
+              if (!this.turnstileToken) {
+                this.alert = { type: 'error', message: '请先完成人机验证。' };
+                return;
+              }
+      
+              this.alert = null;
+              this.loading = true;
+      
+              var body = { 
+                url: this.url,
+                'cf-turnstile-response': this.turnstileToken 
+              };
+              
+              if (this.slug) body.slug = this.slug;
+      
+              var self = this;
+              fetch('/create', {
+                method: 'post',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify(body)
               })
-              .catch(e => {
-                this.alert = { type: 'error', message: e.message };
-                this.loading = false;
-              });
-          }
-        }));
+                .then(function(res) { return res.json(); })
+                .then(function(res) {
+                  self.loading = false;
+                  if (res.message) {
+                    self.alert = { type: 'error', message: res.message };
+                    return;
+                  }
+      
+                  self.url = res.link;
+      
+                  $nextTick(function() {
+                    $refs.url.select();
+                    self.alert = { type: 'success', message: '链接 ' + (document.execCommand('Copy') ? '复制' : '生成') };
+                  });
+                })
+                .catch(function(e) {
+                  self.alert = { type: 'error', message: e.message };
+                  self.loading = false;
+                });
+            }
+          };
+        });
       });
 
-      // 💡 3. 初始化背景颗粒联动效果
-      document.addEventListener('DOMContentLoaded', (event) => {
-        // 如果页面上有自动设置年份的逻辑，顺便在这里做个修正，确保安全
-        const yearEl = document.getElementById('year');
+      // 3. 初始化背景颗粒联动效果
+      document.addEventListener('DOMContentLoaded', function(event) {
+        // 自动修正年份标签
+        var yearEl = document.getElementById('year');
         if (yearEl) {
           yearEl.innerText = new Date().getFullYear();
         }
