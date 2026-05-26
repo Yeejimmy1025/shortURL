@@ -150,10 +150,11 @@
       }
 
       button:disabled {
-        background: blue;
-        border-color: var(--color-primary);
-        /* opacity: .6; */
+        background: #6c757d; /* 灰色背景 */
+        border-color: #6c757d; /* 灰色边框 */
+        color: #e9ecef; /* 文字稍微变暗 */
         cursor: not-allowed;
+        opacity: 0.8; 
       }
 
       button.loading::before {
@@ -240,7 +241,7 @@
       <h1 style="margin-bottom: 0px;"><a href="https://cloud.familyyee.com"> <img src="https://cloud.familyyee.com/asset/img/Cloud FAMILY YEE LOGO [White].png" alt="Cloud FAMILY YEE Logo" style="width: 300px;"></a></h1><br>
       <h2 style="margin-top: 0px; text-align: center;">Short URL Creation | Cloud FAMILY YEE</h1>
     </header>
-    <main x-data="app" x-cloak>
+    <main x-data="app" @turnstile-success.window="turnstileToken = $event.detail" x-cloak>
       <p x-show.transition.opacity="alert" :class="alert?.type" x-text="alert?.message"></p>
       <input placeholder="输入您要缩短的网址..." x-model="url" x-ref="url" />
       <details>
@@ -274,10 +275,10 @@
       // 💡 定义全局变量，方便接收 Turnstile 回调
       let appInstance;
       
+      // 💡 Turnstile 成功验证后的全局回调函数
       function onTurnstileSuccess(token) {
-        if (appInstance) {
-          appInstance.turnstileToken = token;
-        }
+        // 派发一个自定义事件，把 token 传出去
+        document.dispatchEvent(new CustomEvent('turnstile-success', { detail: token }));
       }
       
       document.addEventListener('alpine:init', () => {
