@@ -241,7 +241,7 @@
       <h1 style="margin-bottom: 0px;"><a href="https://cloud.familyyee.com"> <img src="https://cloud.familyyee.com/asset/img/Cloud FAMILY YEE LOGO [White].png" alt="Cloud FAMILY YEE Logo" style="width: 300px;"></a></h1><br>
       <h2 style="margin-top: 0px; text-align: center;">Short URL Creation | Cloud FAMILY YEE</h1>
     </header>
-    <main x-data="app" @turnstile-success.window="turnstileToken = $event.detail" x-cloak>
+    <main x-data="app" >
       <p x-show.transition.opacity="alert" :class="alert?.type" x-text="alert?.message"></p>
       <input placeholder="输入您要缩短的网址..." x-model="url" x-ref="url" />
       <details>
